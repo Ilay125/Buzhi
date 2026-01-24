@@ -1,8 +1,5 @@
 #include "motor.h"
-#include "config.h"
-#include "hardware/pio.h"
-#include <cmath>
-#include "hardware/clocks.h"
+
 
 Motor::Motor(int step_pin, int dir_pin, double angle0) {
     this->step_pin = step_pin;

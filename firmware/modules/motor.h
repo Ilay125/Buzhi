@@ -1,6 +1,11 @@
 #ifndef __MOTOR__
 #define __MOTOR__
 
+#include "config.h"
+#include "hardware/pio.h"
+#include <cmath>
+#include "hardware/clocks.h"
+
 enum Dir {
     clockwise = 1,
     counterclockwise = -1
@@ -35,7 +40,7 @@ class Motor {
      * @brief sets the relative num of steps from home.
      * @param[in] steps the steps.
      */
-    void Motor::set_steps(int steps);
+    void set_steps(int steps);
 
     /**
      * @name add_steps.
@@ -43,9 +48,9 @@ class Motor {
      * @param[in] steps the steps.
      * @param[in] dir the dircetion the motor moves
      */
-    void Motor::add_steps(int steps, Dir dir);
+    void add_steps(int steps, Dir dir);
 
-    int Motor::get_dir_pin();
+    int get_dir_pin();
 };
 
 /**
