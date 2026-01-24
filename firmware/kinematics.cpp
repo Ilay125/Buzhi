@@ -55,7 +55,7 @@ int inverse_kin(double x, double y, double& s1, double& s2) {
     double theta1 = b1 - a1;
     double theta2 = b2 + a2;
 
-    // radians → degrees
+    // radians -> degrees
     s1 = theta1 * 180.0 / PI;
     s2 = theta2 * 180.0 / PI;
 

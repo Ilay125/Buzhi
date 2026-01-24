@@ -44,7 +44,8 @@ add_executable(Buzhi Buzhi.cpp
                 
                 modules/mfrc522.c
                 modules/slice.cpp
-                modules/servo.cpp)
+                modules/servo.cpp
+                modules/motor.cpp)
 
 pico_set_program_name(Buzhi "Buzhi")
 pico_set_program_version(Buzhi "0.1")

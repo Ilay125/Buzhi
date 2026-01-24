@@ -1,0 +1,26 @@
+.program move
+
+.wrap_target
+    pull block      ; pull cycles to be on
+    out x, 32       ; put 32 bits in x = Num of cycles of pulse.
+
+    pull block;
+    out y, 32       ; y = how many clk cycles in a single HALF pulse cycle
+    mov isr, y
+
+
+loop_x:             ; How many cycles in pulse
+    set pins, 1     ; turn STEP on
+    mov y, isr
+    
+loop_on:         ; 50% duty cycle
+    jmp y-- loop_on      
+
+mov y, isr
+set pins, 0     ; turn STEP on
+loop_off:         ; 50% duty cycle
+    jmp y-- loop_off    
+
+    jmp x-- loop_x  ; decrease x
+.wrap
+
