@@ -39,7 +39,8 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(Buzhi Buzhi.cpp )
+add_executable(Buzhi Buzhi.cpp
+                kinematics.cpp)
 
 pico_set_program_name(Buzhi "Buzhi")
 pico_set_program_version(Buzhi "0.1")
