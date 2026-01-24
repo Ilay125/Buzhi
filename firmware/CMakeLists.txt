@@ -40,7 +40,11 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(Buzhi Buzhi.cpp
-                kinematics.cpp)
+                kinematics.cpp
+                
+                modules/mfrc522.c
+                modules/slice.cpp
+                modules/servo.cpp)
 
 pico_set_program_name(Buzhi "Buzhi")
 pico_set_program_version(Buzhi "0.1")
@@ -64,6 +68,8 @@ target_include_directories(Buzhi PRIVATE
 # Add any user requested libraries
 target_link_libraries(Buzhi 
         hardware_pio
+        hardware_pwm
+        hardware_spi
         )
 
 pico_add_extra_outputs(Buzhi)
