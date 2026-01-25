@@ -23,7 +23,7 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
-set(PICO_BOARD pico2 CACHE STRING "Board type")
+set(PICO_BOARD pico2_w CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
@@ -45,13 +45,16 @@ add_executable(Buzhi Buzhi.cpp
                 modules/mfrc522.c
                 modules/slice.cpp
                 modules/servo.cpp
-                modules/motor.cpp)
+                modules/motor.cpp
+                modules/debug.cpp
+                modules/tcp_client.cpp
+                )
 
 pico_set_program_name(Buzhi "Buzhi")
 pico_set_program_version(Buzhi "0.1")
 
 # Generate PIO header
-pico_generate_pio_header(Buzhi ${CMAKE_CURRENT_LIST_DIR}/blink.pio)
+pico_generate_pio_header(Buzhi ${CMAKE_CURRENT_LIST_DIR}/stepper.pio)
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(Buzhi 0)
@@ -72,6 +75,13 @@ target_link_libraries(Buzhi
         hardware_pwm
         hardware_spi
         )
+
+# In case using board supports WiFi - Debugging
+if (PICO_CYW43_SUPPORTED)
+    target_link_libraries(Buzhi pico_cyw43_arch_lwip_threadsafe_background
+                          pico_lwip_nosys
+                          )
+endif()
 
 pico_add_extra_outputs(Buzhi)
 

@@ -1,8 +1,8 @@
 #ifndef __CONFIG__
 #define __CONFIG__
 
-// CHANGE 1 IF USING PICO 2W FOR DEBUG SIM
-#define DEBUG 0
+
+#define DEBUG
 
 /* GPIO PINS */
 
