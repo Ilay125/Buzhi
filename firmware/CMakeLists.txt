@@ -23,7 +23,7 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
-set(PICO_BOARD pico2_w CACHE STRING "Board type")
+set(PICO_BOARD pico2 CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
@@ -47,7 +47,7 @@ add_executable(Buzhi Buzhi.cpp
                 modules/servo.cpp
                 modules/motor.cpp
                 modules/debug.cpp
-                modules/tcp_client.cpp
+                #modules/tcp_client.cpp
                 )
 
 pico_set_program_name(Buzhi "Buzhi")

@@ -5,21 +5,23 @@
 #include "hardware/pio.h"
 #include <cmath>
 #include "hardware/clocks.h"
+#include "stdlib.h"
+#include <cstdio>
 
 enum Dir {
     clockwise = 1,
     counterclockwise = -1
 };
 
-
 class Motor {
     int steps;
     int step_pin;
     int dir_pin;
+    int enable_pin;
     double angle0;
 
     public:
-    Motor(int step_pin, int dir_pin, double angle0);
+    Motor(int step_pin, int dir_pin, int enable_pin, double angle0);
 
     /**
      * @name get_steps.
@@ -49,6 +51,9 @@ class Motor {
      * @param[in] dir the dircetion the motor moves
      */
     void add_steps(int steps, Dir dir);
+
+    void enable();
+    void disable();
 
     int get_dir_pin();
 };

@@ -1,9 +1,19 @@
 #include "motor.h"
 
 
-Motor::Motor(int step_pin, int dir_pin, double angle0) {
+Motor::Motor(int step_pin, int dir_pin, int enable_pin, double angle0) {
     this->step_pin = step_pin;
     this->dir_pin = dir_pin;
+    this->enable_pin = enable_pin;
+
+    gpio_init(this->step_pin);
+    gpio_init(this->dir_pin);
+    gpio_init(this->enable_pin);
+
+    gpio_set_dir(this->step_pin, GPIO_OUT);
+    gpio_set_dir(this->dir_pin, GPIO_OUT);
+    gpio_set_dir(this->enable_pin, GPIO_OUT);
+
     this->angle0 = angle0;
 }
 
@@ -25,6 +35,14 @@ void Motor::set_steps(int steps) {
 
 void Motor::add_steps(int steps, Dir dir) {
     this->steps += steps * dir;
+}
+
+void Motor::enable() {
+    gpio_put(this->enable_pin, 0);
+}
+
+void Motor::disable() {
+    gpio_put(this->enable_pin, 1);
 }
 
 double velocity_profile(double curr_t, double max_t, double max_speed) {
@@ -55,8 +73,6 @@ void move_motors(Motor &m1, Motor &m2, double s1, double s2,
     double delta_t1 = fabs(s1 - m1.get_angle());
     double delta_t2 = fabs(s2 - m2.get_angle());
 
- 
-
     Dir dir1 = s1 - m1.get_angle() < 0 ? clockwise :counterclockwise; // Right motor
     Dir dir2 = s2 - m2.get_angle() < 0 ? clockwise :counterclockwise; // Left motor
 
@@ -71,7 +87,8 @@ void move_motors(Motor &m1, Motor &m2, double s1, double s2,
 
     double step_t = t_total / T_RES;
     double freq = clock_get_hz(clk_sys) / PIO_CLKDIV;
-
+    
+    printf("running for %.2f ticks", t_total/step_t);
     for (double t = 0; t < t_total; t+=step_t) {
         
         double v1 = velocity_profile(t, t_total, ratio_avg_max*const_v1);

@@ -2,12 +2,18 @@
 #define __CONFIG__
 
 
-#define DEBUG
+//#define DEBUG
 
 /* GPIO PINS */
 
 // MOTORS
+#define STEP1_PIN 2
+#define DIR1_PIN 4
+#define ENABLE1_PIN 6
 
+#define STEP2_PIN 3
+#define DIR2_PIN 5
+#define ENABLE2_PIN 7
 
 // SERVO
 #define SERVO_PIN 15 
@@ -46,6 +52,11 @@
 #define T2 0.8
 
 #define T_RES 1000
-#define PIO_CLKDIV 1.0
+#define PIO_CLKDIV 500.0
+
+// Servo
+#define SERVO_FREQ 50 // [Hz]
+#define SERVO_UP_ANGLE 100 // [Deg]
+#define SERVO_DOWN_ANGLE 40 // [Deg]
 
 #endif
