@@ -2,9 +2,10 @@
 #define __MOTOR__
 
 #include "config.h"
-#include "hardware/pio.h"
+#include "hardware/gpio.h"
 #include <cmath>
 #include "hardware/clocks.h"
+#include "pico/time.h"
 #include "stdlib.h"
 #include <cstdio>
 
@@ -55,18 +56,9 @@ class Motor {
     void enable();
     void disable();
 
+    void move(int steps, Dir dir, double speed);
+
     int get_dir_pin();
 };
-
-/**
- * @name move_motors
- * @brief Moves two motors simultaniously using PIO.
- * @param[in] m1 Reference to right motor.
- * @param[in] m2 Reference to left motor.
- * @param[in] s1 Angle for right motor.
- * @param[in] s2 angle for left motor.
- * @param[in] pio ...
- */
-void move_motors(Motor &m1, Motor &m2, double s1, double s2, double dist, PIO pio, uint sA, uint sB);
 
 #endif

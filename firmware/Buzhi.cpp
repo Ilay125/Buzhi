@@ -1,5 +1,6 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
+#include "pico/multicore.h"
 
 #include "config.h"
 
@@ -10,9 +11,6 @@
     #include "creds.h"
 #endif
 
-#include "hardware/pio.h"
-#include "stepper.pio.h"
-
 #include "kinematics.h"
 
 #include "modules/debug.h"
@@ -22,6 +20,18 @@
 
 #include <stdio.h>
 #include <vector>
+
+struct point_data {
+    Dir dir;
+    int steps;
+    double speed;
+};
+
+// Shared memory space between cores
+Motor* motB = nullptr;
+point_data point_dataB;
+volatile bool thread_active = false;
+
 
 #ifdef DEBUG
 int main_debug() {
@@ -85,6 +95,22 @@ int main_debug() {
 }
 #endif
 
+void core1_entry() {
+
+    printf("Core 1 started, step=%d, dir=%d, speed=%f\n", point_dataB.steps, point_dataB.dir, point_dataB.speed);
+    while (true) {
+
+        if(!thread_active) {
+            tight_loop_contents();
+            continue;
+        }
+
+        motB->move(point_dataB.steps, point_dataB.dir, point_dataB.speed);
+
+        thread_active = false;
+    }
+}
+
 int main_release () {
     stdio_init_all();
 
@@ -102,6 +128,14 @@ int main_release () {
     Motor mot1(STEP1_PIN, DIR1_PIN, ENABLE1_PIN, s1);
     Motor mot2(STEP2_PIN, DIR2_PIN, ENABLE2_PIN, s2);
 
+    motB = &mot2;
+
+    point_dataB.dir = clockwise;
+    point_dataB.steps = 400;
+    point_dataB.speed = 50.0;
+
+    multicore_launch_core1(core1_entry);
+
     mot1.disable();
     mot2.disable();
 
@@ -110,51 +144,15 @@ int main_release () {
     servo.set_angle(SERVO_DOWN_ANGLE);
 
     sleep_us(5);
+    
+    mot1.enable();
+    mot2.enable();
 
-    // PIO SETUP
-    PIO pio = pio0;
-    uint offset = pio_add_program(pio, &move_program); // Flash PIO instructions
+    thread_active = true;
+    mot1.move(400, counterclockwise, 50.0);
 
-    uint sA = pio_claim_unused_sm(pio, true);
-    uint sB = pio_claim_unused_sm(pio, true);
-
-    pio_sm_set_clkdiv(pio, sA, PIO_CLKDIV);
-    pio_sm_set_clkdiv(pio, sB, PIO_CLKDIV);
-
-
-    // ---smA---
-    pio_sm_config cA = move_program_get_default_config(offset);
-    sm_config_set_sideset_pins(&cA, STEP1_PIN);
-    pio_sm_set_consecutive_pindirs(pio, sA, STEP1_PIN, 1, true);
-
-    // ---smB---
-    pio_sm_config cB = move_program_get_default_config(offset);
-    sm_config_set_sideset_pins(&cB, STEP2_PIN);
-    pio_sm_set_consecutive_pindirs(pio, sB, STEP2_PIN, 1, true);
-
-    pio_sm_init(pio, sA, offset, &cA);
-    pio_sm_init(pio, sB, offset, &cB);
-
-    // Starts both machines on same cycle
-    pio_enable_sm_mask_in_sync(pio, (1u << sA) | (1u << sB));
-
-    sleep_ms(2000);
-    // Main loop
-    printf("Main loop\n");
-    while (true) {
-        inverse_kin(X0, Y0-1, s1, s2);
-        printf("moving\n");
-
-        mot1.enable();
-        mot2.enable();
-        debug_led.set(1);
-        move_motors(mot1, mot2, s1, s2, 1, pio, sA, sB);
-        debug_led.set(0);
-        mot1.disable();
-        mot2.disable();
-
-        sleep_ms(1000);
-    }
+    mot1.disable();
+    mot2.disable();
 
     return 0;
 }

@@ -71,9 +71,10 @@ target_include_directories(Buzhi PRIVATE
 
 # Add any user requested libraries
 target_link_libraries(Buzhi 
-        hardware_pio
+        hardware_gpio
         hardware_pwm
         hardware_spi
+        pico_multicore
         )
 
 # In case using board supports WiFi - Debugging

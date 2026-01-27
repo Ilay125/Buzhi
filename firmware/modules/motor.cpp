@@ -60,58 +60,21 @@ double velocity_profile(double curr_t, double max_t, double max_speed) {
     return max_speed;
 }
 
-bool pio_done(PIO pio, uint sm) {
-    return pio_sm_is_tx_fifo_empty(pio, sm) && pio_sm_is_exec_stalled(pio, sm);
-}
 
-void move_motors(Motor &m1, Motor &m2, double s1, double s2,
-                double dist, PIO pio, uint sA, uint sB) {
+void Motor::move(int steps, Dir dir, double speed) {
+    gpio_put(this->dir_pin, dir == clockwise ? 1 : 0);
 
-    // Time both motor will finih their motion
-    double t_total = dist / SPEED;
+    double step_delay = (STEP_TO_DEG) / speed; // seconds per step
+    uint32_t delay_us = (uint32_t)(step_delay * 1e6); // microseconds per step
 
-    double delta_t1 = fabs(s1 - m1.get_angle());
-    double delta_t2 = fabs(s2 - m2.get_angle());
+    printf("starting move");
 
-    Dir dir1 = s1 - m1.get_angle() < 0 ? clockwise :counterclockwise; // Right motor
-    Dir dir2 = s2 - m2.get_angle() < 0 ? clockwise :counterclockwise; // Left motor
+    sleep_us(20);
 
-    gpio_put(m1.get_dir_pin(), dir1 == clockwise ? 1 : 0);
-    gpio_put(m2.get_dir_pin(), dir2 == clockwise ? 1 : 0);
-
-    double const_v1 = delta_t1 / t_total;
-    double const_v2 = delta_t2 / t_total;
-
-    // The ratio beteen the avg "const" to max speed.
-    double ratio_avg_max =  2  / (1 + T2 - T1);
-
-    double step_t = t_total / T_RES;
-    double freq = clock_get_hz(clk_sys) / PIO_CLKDIV;
-    
-    printf("running for %.2f ticks", t_total/step_t);
-    for (double t = 0; t < t_total; t+=step_t) {
-        
-        double v1 = velocity_profile(t, t_total, ratio_avg_max*const_v1);
-        double v2 = velocity_profile(t, t_total, ratio_avg_max*const_v2);
-
-        int p1 = round(fabs(v1 * step_t / STEP_TO_DEG));
-        int p2 = round(fabs(v2 * step_t / STEP_TO_DEG));
-
-        // Check if queue is empty before running next
-        while (!pio_done(pio, sA) || !pio_done(pio, sB)) {
-            tight_loop_contents();
-        }
-        
-        if (p1 > 0 && v1 > 1e-6) {
-            int f1 = round((freq * STEP_TO_DEG) / (2.0 * v1));
-            pio_sm_put_blocking(pio, sA, p1);
-            pio_sm_put_blocking(pio, sA, f1);
-        }
-
-        if (p2 > 0 && v2 > 1e-6) {
-            int f2 = round((freq * STEP_TO_DEG) / (2.0 * v2));
-            pio_sm_put_blocking(pio, sB, p2);
-            pio_sm_put_blocking(pio, sB, f2);
-        }
+    for (int i = 0; i < steps; i++) {
+        gpio_put(this->step_pin, 1);
+        busy_wait_us_32(delay_us);
+        gpio_put(this->step_pin, 0);
+        busy_wait_us_32(delay_us);
     }
 }
