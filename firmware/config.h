@@ -41,9 +41,10 @@
 #define Y_OFFSET 9.0 // [cm]
 
 /* MOTOR */
-// convertion constant [steps/angle]
-#define STEP_TO_DEG 1.8 / 8
-#define SPEED 2 // [cm/sec]
+// convertion constant [angle/step] - How much angle I have in one step.
+const double STEP_TO_DEG = 1.8 / 8;
+#define MAX_SPEED 20 // steps frequency [steps/s]
+#define MICROSTEP 0.1 // [cm] distance between points for curve interpolation
 
 // The ratio for time to accelerate at the beginning
 #define T1 0.2
@@ -52,7 +53,6 @@
 #define T2 0.8
 
 #define T_RES 1000
-#define PIO_CLKDIV 500.0
 
 // Servo
 #define SERVO_FREQ 50 // [Hz]

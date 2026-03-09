@@ -15,6 +15,7 @@ Motor::Motor(int step_pin, int dir_pin, int enable_pin, double angle0) {
     gpio_set_dir(this->enable_pin, GPIO_OUT);
 
     this->angle0 = angle0;
+    this->steps = 0;
 }
 
 int Motor::get_steps() {
@@ -45,6 +46,30 @@ void Motor::disable() {
     gpio_put(this->enable_pin, 1);
 }
 
+Dir Motor::calc_dir(double new_angle) {
+    double curr_angle = this->get_angle();
+    return (new_angle > curr_angle) ? clockwise : counterclockwise;
+}
+
+int Motor::calc_steps_num(double new_angle) {
+    double curr_angle = this->get_angle();
+    double angle_diff = fabs(new_angle - curr_angle);
+
+    //printf("curr_angle: %f, new_angle: %f, angle_diff: %f\n", curr_angle, new_angle, angle_diff);
+    return (int)(angle_diff / STEP_TO_DEG);
+}
+
+void Motor::calc_speeds(double max_speed, int steps1, int steps2, double& speed1, double& speed2) {
+    int max_steps = std::max(steps1, steps2);
+    double t1 = (double)steps1 / max_steps;
+    double t2 = (double)steps2 / max_steps;
+
+    speed1 = max_speed * t1;
+    speed2 = max_speed * t2;
+
+    //printf("t1: %f, t2: %f, speed1: %f, speed2: %f\n", t1, t2, speed1, speed2);
+}
+
 double velocity_profile(double curr_t, double max_t, double max_speed) {
     double start_slope = max_speed / (T1*max_t);
     double end_slope = max_speed / (T2*max_t - max_t);
@@ -67,7 +92,7 @@ void Motor::move(int steps, Dir dir, double speed) {
     double step_delay = (STEP_TO_DEG) / speed; // seconds per step
     uint32_t delay_us = (uint32_t)(step_delay * 1e6); // microseconds per step
 
-    printf("starting move");
+    //printf("starting move");
 
     sleep_us(20);
 
@@ -76,5 +101,7 @@ void Motor::move(int steps, Dir dir, double speed) {
         busy_wait_us_32(delay_us);
         gpio_put(this->step_pin, 0);
         busy_wait_us_32(delay_us);
+
+        //this->add_steps(1, dir);
     }
 }

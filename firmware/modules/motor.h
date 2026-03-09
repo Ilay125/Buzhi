@@ -58,6 +58,14 @@ class Motor {
 
     void move(int steps, Dir dir, double speed);
 
+    Dir calc_dir(double new_angle);
+
+    int calc_steps_num(double new_angle);
+
+    void calc_speeds(double max_speed, int steps1, int steps2, double& speed1, double& speed2);
+
+    //double velocity_profile(double curr_t, double max_t, double max_speed);
+
     int get_dir_pin();
 };
 

@@ -61,3 +61,4 @@ int inverse_kin(double x, double y, double& s1, double& s2) {
 
     return 0;
 }
+

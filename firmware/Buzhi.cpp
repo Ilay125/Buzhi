@@ -12,6 +12,8 @@
 #endif
 
 #include "kinematics.h"
+#include "commands.h"
+#include "commandQ.h"
 
 #include "modules/debug.h"
 #include "modules/mfrc522.h"
@@ -21,15 +23,11 @@
 #include <stdio.h>
 #include <vector>
 
-struct point_data {
-    Dir dir;
-    int steps;
-    double speed;
-};
+
 
 // Shared memory space between cores
 Motor* motB = nullptr;
-point_data point_dataB;
+point_data* point_dataB = nullptr;
 volatile bool thread_active = false;
 
 
@@ -97,7 +95,7 @@ int main_debug() {
 
 void core1_entry() {
 
-    printf("Core 1 started, step=%d, dir=%d, speed=%f\n", point_dataB.steps, point_dataB.dir, point_dataB.speed);
+    printf("Core 1 started, step=%d, dir=%d, speed=%f\n", point_dataB->steps, point_dataB->dir, point_dataB->speed);
     while (true) {
 
         if(!thread_active) {
@@ -105,13 +103,17 @@ void core1_entry() {
             continue;
         }
 
-        motB->move(point_dataB.steps, point_dataB.dir, point_dataB.speed);
+        motB->move(point_dataB->steps, point_dataB->dir, point_dataB->speed);
 
         thread_active = false;
     }
 }
 
 int main_release () {
+    std::vector<point_data*> pointsA;
+    std::vector<point_data*> pointsB;
+    CommandQueue command_queue;
+
     stdio_init_all();
 
     sleep_ms(1000);
@@ -130,29 +132,63 @@ int main_release () {
 
     motB = &mot2;
 
-    point_dataB.dir = clockwise;
-    point_dataB.steps = 400;
-    point_dataB.speed = 50.0;
-
+    // Set servo
+    //Servo servo(SERVO_PIN, 50);
+    
     multicore_launch_core1(core1_entry);
 
-    mot1.disable();
-    mot2.disable();
 
-    // Set servo
-    Servo servo(SERVO_PIN, 50);
-    servo.set_angle(SERVO_DOWN_ANGLE);
+    // Example commands
+    command_queue.add_command(new Line(X0, Y0, X0, Y0 - 1));
 
-    sleep_us(5);
-    
+    // Drawing sequence
+    //servo.set_angle(SERVO_DOWN_ANGLE);
+
+    sleep_ms(500);
+    debug_led.set(true);
+
     mot1.enable();
     mot2.enable();
 
-    thread_active = true;
-    mot1.move(400, counterclockwise, 50.0);
+    command_queue.gen_draw_vec(mot1, mot2, pointsA, pointsB);
 
+    if (pointsA.size() != pointsB.size()) {
+        printf("Error: pointsA and pointsB have different sizes.\n");
+        return 1;
+    }
+
+    printf("Generated %d points for drawing.\n", (int)pointsA.size());
+
+    for (int i = 0; i < pointsA.size(); i++) {
+        point_data* pointA = pointsA[i];
+        point_data* pointB = pointsB[i];
+
+        printf("Drawing point %d: Motor 1 - steps=%d, dir=%d, speed=%f; Motor 2 - steps=%d, dir=%d, speed=%f\n",
+               i, pointA->steps, pointA->dir, pointA->speed,
+               pointB->steps, pointB->dir, pointB->speed);
+
+        // Set shared data for core 1
+        point_dataB = pointB;
+        thread_active = true;
+
+        // Move motor 1 in main thread
+        mot1.move(pointA->steps, pointA->dir, pointA->speed);
+
+        // Wait for core 1 to finish
+        while (thread_active) {
+            tight_loop_contents();
+        }
+
+        delete pointA;
+        delete pointB;
+    }
+
+    
+    
     mot1.disable();
     mot2.disable();
+
+    debug_led.set(false);
 
     return 0;
 }

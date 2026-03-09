@@ -41,6 +41,8 @@ pico_sdk_init()
 
 add_executable(Buzhi Buzhi.cpp
                 kinematics.cpp
+                commandQ.cpp
+                commands.cpp
                 
                 modules/mfrc522.c
                 modules/slice.cpp
