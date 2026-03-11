@@ -427,6 +427,7 @@ bool PICC_IsNewCardPresent(MFRC522Ptr_t mfrc);
 bool PICC_ReadCardSerial(MFRC522Ptr_t mfrc);
 
 
+
 #ifdef __cplusplus
 }
 #endif 

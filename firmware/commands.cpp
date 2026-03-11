@@ -8,8 +8,6 @@
 #include "modules/servo.h"
 #include <vector>
 
-#define SCALE_FACTOR 1.0
-
 double clampd(double v, double lo, double hi) {
     return (v < lo) ? lo : (v > hi) ? hi : v;
 }
@@ -20,12 +18,12 @@ double velocity_profile(double curr_t, double max_speed) {
     double end_slope = real_max_speed / (T2 - 1.0);
     //printf("curr t=%f => ", curr_t);
     if (curr_t < T1) {
-        printf("start speed = %f\n", start_slope * curr_t);
+        //printf("start speed = %f\n", start_slope * curr_t);
         return start_slope * curr_t;
     }
 
     if (curr_t > T2) {
-        printf("end speed = %f\n", real_max_speed + (curr_t - T2) * end_slope);
+        //printf("end speed = %f\n", real_max_speed + (curr_t - T2) * end_slope);
         return real_max_speed + (curr_t - T2) * end_slope;
     }
 
@@ -38,6 +36,8 @@ int move_to_xy(
     double x, double y,
     std::vector<point_data*>& pointsA, std::vector<point_data*>& pointsB,
     double curr_t, bool is_move = false) {
+
+    printf("Moving to (%.3f, %.3f)\n", x, y);
 
     double s1, s2;
     int res = inverse_kin(x, y, s1, s2);
@@ -56,9 +56,6 @@ int move_to_xy(
 
     Dir dirA = (deltaA < 0) ? counterclockwise : clockwise;
     Dir dirB = (deltaB < 0) ? counterclockwise : clockwise;
-
-    printf("Moving to (%.2f, %.2f) => s1=%.2f, s2=%.2f, stepsA=%d, stepsB=%d, dirA=%d, dirB=%d\n",
-           x, y, s1, s2, stepsA, stepsB, dirA, dirB);
 
     double speedA, speedB;
 
@@ -79,11 +76,26 @@ int move_to_xy(
         adj_speedB = velocity_profile(curr_t, speedB);
     }
 
-    point_data* pointA = new point_data{dirA, stepsA, adj_speedA, is_move};
-    point_data* pointB = new point_data{dirB, stepsB, adj_speedB, is_move};
+    //double r = std::sqrt(x * x + y * y);
+    double r = y;
 
-    printf("dataA : steps=%d, dir=%d, speed=%f\n", pointA->steps, pointA->dir, pointA->speed);
-    printf("dataB : steps=%d, dir=%d, speed=%f\n", pointB->steps, pointB->dir, pointB->speed);
+    int servo_angle = SERVO_UP_ANGLE;
+
+    if (!is_move) {
+        if (r < R_LOW) {
+            servo_angle = SERVO_DOWN_MIN_ANGLE;
+        } else if (r > R_HIGH) {
+            servo_angle = SERVO_DOWN_MAX_ANGLE;
+        } else {
+            servo_angle = SERVO_DOWN_MID_ANGLE;
+        }
+    }
+
+    point_data* pointA = new point_data{dirA, stepsA, speedA, is_move, servo_angle};
+    point_data* pointB = new point_data{dirB, stepsB, speedB, is_move, servo_angle};
+
+    //printf("dataA : steps=%d, dir=%d, speed=%f\n", pointA->steps, pointA->dir, pointA->speed);
+    //printf("dataB : steps=%d, dir=%d, speed=%f\n", pointB->steps, pointB->dir, pointB->speed);
 
     pointsA.push_back(pointA);
     pointsB.push_back(pointB);
@@ -94,6 +106,7 @@ int move_to_xy(
 
     return 0;
 }
+
 
 Move::Move(double x0, double y0) {
     this->x0 = x0 * SCALE_FACTOR + X_OFFSET;
@@ -110,20 +123,22 @@ void Move::print_command() {
     printf("Move: (%f, %f)\n", this->x0, this->y0);
 }
 
-/*
+
 Line::Line(double x0, double y0, double x1, double y1) {
     this->x0 = x0 * SCALE_FACTOR + X_OFFSET;
     this->y0 = y0 * SCALE_FACTOR + Y_OFFSET;
     this->x1 = x1 * SCALE_FACTOR + X_OFFSET;
     this->y1 = y1 * SCALE_FACTOR + Y_OFFSET;
 }
-*/
+
+/*
 Line::Line(double x0, double y0, double x1, double y1) {
     this->x0 = x0;
     this->y0 = y0;
     this->x1 = x1;
     this->y1 = y1;
 }
+*/
 
 
 int Line::draw(Motor &m1, Motor &m2, std::vector<point_data*>& pointsA, std::vector<point_data*>& pointsB) {

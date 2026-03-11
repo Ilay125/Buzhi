@@ -38,12 +38,14 @@
 
 // Recallibration of coord-system
 #define X_OFFSET -5.0 // [cm] 
-#define Y_OFFSET 9.0 // [cm]
+#define Y_OFFSET 13.0 // [cm]
+#define SCALE_FACTOR 0.65
+
 
 /* MOTOR */
 // convertion constant [angle/step] - How much angle I have in one step.
 const double STEP_TO_DEG = 1.8 / 8;
-#define MAX_SPEED 20 // steps frequency [steps/s]
+#define MAX_SPEED 10 // steps frequency [steps/s]
 #define MICROSTEP 0.1 // [cm] distance between points for curve interpolation
 
 // The ratio for time to accelerate at the beginning
@@ -57,6 +59,10 @@ const double STEP_TO_DEG = 1.8 / 8;
 // Servo
 #define SERVO_FREQ 50 // [Hz]
 #define SERVO_UP_ANGLE 100 // [Deg]
-#define SERVO_DOWN_ANGLE 40 // [Deg]
+#define SERVO_DOWN_MIN_ANGLE 55 // [Deg]
+#define SERVO_DOWN_MID_ANGLE 60 // [Deg]
+#define SERVO_DOWN_MAX_ANGLE 60 // [Deg]
 
+#define R_LOW 13.5// [cm] border radius for servo down position
+#define R_HIGH 13 // [cm] border radius for servo down position
 #endif

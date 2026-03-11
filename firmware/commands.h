@@ -10,6 +10,7 @@ struct point_data {
     int steps;
     double speed;
     bool is_move;
+    int servo_angle;
 };
 
 class Command {

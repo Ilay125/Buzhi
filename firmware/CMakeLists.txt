@@ -49,6 +49,7 @@ add_executable(Buzhi Buzhi.cpp
                 modules/servo.cpp
                 modules/motor.cpp
                 modules/debug.cpp
+                modules/nfc_utlis.cpp
                 #modules/tcp_client.cpp
                 )
 

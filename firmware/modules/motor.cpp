@@ -14,6 +14,10 @@ Motor::Motor(int step_pin, int dir_pin, int enable_pin, double angle0) {
     gpio_set_dir(this->dir_pin, GPIO_OUT);
     gpio_set_dir(this->enable_pin, GPIO_OUT);
 
+    this->home(angle0);
+}
+
+void Motor::home(double angle0) {
     this->angle0 = angle0;
     this->steps = 0;
 }
@@ -23,7 +27,7 @@ int Motor::get_steps() {
 }
 
 double Motor::get_angle() {
-    return this->angle0 + this->steps / STEP_TO_DEG;
+    return this->angle0 + this->steps * STEP_TO_DEG;
 } 
 
 int Motor::get_dir_pin() {

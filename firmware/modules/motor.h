@@ -64,7 +64,7 @@ class Motor {
 
     void calc_speeds(double max_speed, int steps1, int steps2, double& speed1, double& speed2);
 
-    //double velocity_profile(double curr_t, double max_t, double max_speed);
+    void home(double angle0);
 
     int get_dir_pin();
 };
