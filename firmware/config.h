@@ -39,7 +39,8 @@
 // Recallibration of coord-system
 #define X_OFFSET -5.0 // [cm] 
 #define Y_OFFSET 13.0 // [cm]
-#define SCALE_FACTOR 0.65
+#define X_SCALE 0.8
+#define Y_SCALE 0.65
 
 
 /* MOTOR */

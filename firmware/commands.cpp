@@ -109,8 +109,8 @@ int move_to_xy(
 
 
 Move::Move(double x0, double y0) {
-    this->x0 = x0 * SCALE_FACTOR + X_OFFSET;
-    this->y0 = y0 * SCALE_FACTOR + Y_OFFSET;
+    this->x0 = x0 * X_SCALE + X_OFFSET;
+    this->y0 = y0 * Y_SCALE + Y_OFFSET;
 }
 
 int Move::draw(Motor &m1, Motor &m2, std::vector<point_data*>& pointsA, std::vector<point_data*>& pointsB) {
@@ -125,10 +125,10 @@ void Move::print_command() {
 
 
 Line::Line(double x0, double y0, double x1, double y1) {
-    this->x0 = x0 * SCALE_FACTOR + X_OFFSET;
-    this->y0 = y0 * SCALE_FACTOR + Y_OFFSET;
-    this->x1 = x1 * SCALE_FACTOR + X_OFFSET;
-    this->y1 = y1 * SCALE_FACTOR + Y_OFFSET;
+    this->x0 = x0 * X_SCALE + X_OFFSET;
+    this->y0 = y0 * Y_SCALE + Y_OFFSET;
+    this->x1 = x1 * X_SCALE + X_OFFSET;
+    this->y1 = y1 * Y_SCALE + Y_OFFSET;
 }
 
 /*
@@ -182,14 +182,14 @@ void Line::print_command() {
 
 Cubic::Cubic(double x0, double y0, double x1, double y1,
              double x2, double y2, double x3, double y3) {
-    this->x0 = x0 * SCALE_FACTOR + X_OFFSET;
-    this->y0 = y0 * SCALE_FACTOR + Y_OFFSET;
-    this->x1 = x1 * SCALE_FACTOR + X_OFFSET;
-    this->y1 = y1 * SCALE_FACTOR + Y_OFFSET;
-    this->x2 = x2 * SCALE_FACTOR + X_OFFSET;
-    this->y2 = y2 * SCALE_FACTOR + Y_OFFSET;
-    this->x3 = x3 * SCALE_FACTOR + X_OFFSET;
-    this->y3 = y3 * SCALE_FACTOR + Y_OFFSET;
+    this->x0 = x0 * X_SCALE + X_OFFSET;
+    this->y0 = y0 * Y_SCALE + Y_OFFSET;
+    this->x1 = x1 * X_SCALE + X_OFFSET;
+    this->y1 = y1 * Y_SCALE + Y_OFFSET;
+    this->x2 = x2 * X_SCALE + X_OFFSET;
+    this->y2 = y2 * Y_SCALE + Y_OFFSET;
+    this->x3 = x3 * X_SCALE + X_OFFSET;
+    this->y3 = y3 * Y_SCALE + Y_OFFSET;
 }
 
 int Cubic::draw(Motor &m1, Motor &m2, std::vector<point_data*>& pointsA, std::vector<point_data*>& pointsB) {
