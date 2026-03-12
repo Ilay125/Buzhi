@@ -16,16 +16,25 @@
 #define ENABLE2_PIN 7
 
 // SERVO
-#define SERVO_PIN 15 
+#define SERVO_PIN 0 
 
 
 // NFC READER
-#define RESET_PIN 16
-#define MISO_PIN 20
-#define MOSI_PIN 19
-#define SCK_PIN 18
-#define CS_PIN 21
+#define RESET_NFC_PIN 16
+#define MISO_NFC_PIN 20
+#define MOSI_NFC_PIN 19
+#define SCK_NFC_PIN 18
+#define CS_NFC_PIN 21
 
+// SCREEN
+#define PIN_SCREEN_SCK 10
+#define PIN_SCREEN_MOSI 11
+#define PIN_SCREEN_DC 12
+#define PIN_SCREEN_CS 13
+#define PIN_SCREEN_RST 14
+
+#define SCREEN_WIDTH 240
+#define SCREEN_HEIGHT 240
 
 /* KINEMATICS */
 #define PI 3.14159265
@@ -39,7 +48,7 @@
 // Recallibration of coord-system
 #define X_OFFSET -5.0 // [cm] 
 #define Y_OFFSET 13.0 // [cm]
-#define X_SCALE 0.8
+#define X_SCALE 0.85
 #define Y_SCALE 0.65
 
 

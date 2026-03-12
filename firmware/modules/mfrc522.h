@@ -39,10 +39,10 @@ extern "C" {
 
 static const uint8_t FIFO_SIZE = 64; // Size of the MFRC522 FIFO
 
-static const uint cs_pin = CS_PIN;
-static const uint sck_pin = SCK_PIN;
-static const uint mosi_pin = MOSI_PIN;
-static const uint miso_pin = MISO_PIN;
+static const uint cs_pin = CS_NFC_PIN;
+static const uint sck_pin = SCK_NFC_PIN;
+static const uint mosi_pin = MOSI_NFC_PIN;
+static const uint miso_pin = MISO_NFC_PIN;
 
 static const uint8_t SELF_TEST_BYTES[] = {
 	0x00, 0xEB, 0x66, 0xBA, 0x57, 0xBF, 0x23, 0x95,

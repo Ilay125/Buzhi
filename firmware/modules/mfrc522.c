@@ -213,11 +213,11 @@ PCD_CalculateCRC(MFRC522Ptr_t mfrc,
 void PCD_Init(MFRC522Ptr_t mfrc, spi_inst_t *spi) {
 
 	mfrc->spi = spi0;
-	gpio_init(RESET_PIN);
-	gpio_set_dir(RESET_PIN, true);
-	gpio_put(RESET_PIN, 0);
+	gpio_init(RESET_NFC_PIN);
+	gpio_set_dir(RESET_NFC_PIN, true);
+	gpio_put(RESET_NFC_PIN, 0);
     sleep_ms(1000);
-    gpio_put(RESET_PIN, 1);
+    gpio_put(RESET_NFC_PIN, 1);
 	sleep_ms(50);
 
     gpio_init(cs_pin);

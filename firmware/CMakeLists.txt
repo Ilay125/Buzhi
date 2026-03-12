@@ -43,6 +43,7 @@ add_executable(Buzhi Buzhi.cpp
                 kinematics.cpp
                 commandQ.cpp
                 commands.cpp
+                screen_manager.cpp
                 
                 modules/mfrc522.c
                 modules/slice.cpp
@@ -50,6 +51,7 @@ add_executable(Buzhi Buzhi.cpp
                 modules/motor.cpp
                 modules/debug.cpp
                 modules/nfc_utlis.cpp
+                modules/screen.cpp
                 #modules/tcp_client.cpp
                 )
 
@@ -78,6 +80,7 @@ target_link_libraries(Buzhi
         hardware_pwm
         hardware_spi
         pico_multicore
+        pico_rand
         )
 
 # In case using board supports WiFi - Debugging

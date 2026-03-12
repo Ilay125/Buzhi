@@ -1,6 +1,7 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/multicore.h"
+#include "pico/rand.h"
 
 #include "config.h"
 
@@ -14,16 +15,17 @@
 #include "kinematics.h"
 #include "commands.h"
 #include "commandQ.h"
+#include "screen_manager.h"
 
 #include "modules/debug.h"
 #include "modules/mfrc522.h"
 #include "modules/motor.h"
 #include "modules/servo.h"
 #include "modules/nfc_utils.h"
+#include "modules/screen.h"
 
 #include <stdio.h>
 #include <vector>
-
 
 
 // Shared memory space between cores
@@ -122,6 +124,17 @@ int main_release () {
     // Debug LED init
     Debug debug_led;
 
+    // Screen init
+    Screen screen(
+        spi1,
+        PIN_SCREEN_SCK,
+        PIN_SCREEN_MOSI,
+        PIN_SCREEN_DC,
+        PIN_SCREEN_CS,
+        PIN_SCREEN_RST
+    );
+
+    Screen_Manager screen_manager(&screen);
 
     // Inverse kinematcs for homing
     double s1, s2;
@@ -156,6 +169,8 @@ int main_release () {
     // Drawing sequence - Main Loop
     sleep_ms(2000);
 
+    // Show looking for card screen
+    screen_manager.set_state(LOOKING_FOR_CARD);
     while (true) {
         // Setting home position - move manually for calibration
         servo.set_angle(SERVO_UP_ANGLE);
@@ -163,9 +178,17 @@ int main_release () {
         mot1.home(s1);
         mot2.home(s2);
 
+        // Update screen animation
+        screen_manager.update();
+
         // Waiting for NFC card
         printf("Waiting for NFC card...\n");
-        while (!PICC_IsNewCardPresent(mfrc)) tight_loop_contents();
+        while (!PICC_IsNewCardPresent(mfrc)) {
+
+            // Update screen animation while waiting for card
+            screen_manager.update();
+        }
+
         if (!PICC_ReadCardSerial(mfrc)) continue;
 
         printf("Card UID:");
@@ -247,6 +270,8 @@ int main_release () {
         // Drawing sequence
         printf("\n\n-------------------\nSTARTING DRAWING\n-------------------\nGenerated %d points for drawing.\n", (int)pointsA.size());
 
+        screen_manager.set_state(DRAWING);
+
         sleep_ms(1000);
         mot1.enable();
         mot2.enable();
@@ -254,6 +279,10 @@ int main_release () {
         printf("Motors enabled!\n");
 
         for (int i = 0; i < pointsA.size(); i++) {
+            // Update drawing progress on screen
+            screen_manager.set_drawing_progress((i + 1) / (double)pointsA.size());
+            screen_manager.update();
+
             point_data* pointA = pointsA[i];
             point_data* pointB = pointsB[i];
 
@@ -313,6 +342,10 @@ int main_release () {
         servo.set_angle(SERVO_UP_ANGLE);
 
         debug_led.set(false);
+
+        sleep_ms(1000);
+
+        screen_manager.set_state(LOOKING_FOR_CARD);
     }
 
     return 0;
