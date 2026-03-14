@@ -73,6 +73,6 @@ const double STEP_TO_DEG = 1.8 / 8;
 #define SERVO_DOWN_MID_ANGLE 60 // [Deg]
 #define SERVO_DOWN_MAX_ANGLE 60 // [Deg]
 
-#define R_LOW 13.5// [cm] border radius for servo down position
+#define R_LOW 13.8// [cm] border radius for servo down position
 #define R_HIGH 13 // [cm] border radius for servo down position
 #endif

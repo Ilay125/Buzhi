@@ -193,6 +193,15 @@ Cubic::Cubic(double x0, double y0, double x1, double y1,
 }
 
 int Cubic::draw(Motor &m1, Motor &m2, std::vector<point_data*>& pointsA, std::vector<point_data*>& pointsB) {
+    // If all control points are practically in the same place, just move there once.
+    const double epsilon = 1e-6;
+    if (std::abs(this->x0 - this->x1) < epsilon && std::abs(this->y0 - this->y1) < epsilon &&
+        std::abs(this->x1 - this->x2) < epsilon && std::abs(this->y1 - this->y2) < epsilon &&
+        std::abs(this->x2 - this->x3) < epsilon && std::abs(this->y2 - this->y3) < epsilon) {
+        
+        int res = move_to_xy(m1, m2, this->x3, this->y3, pointsA, pointsB, 1.0, false);
+        return res;
+    }
 
     auto bezier = [this](double t, double &x, double &y) {
         double u  = 1.0 - t;

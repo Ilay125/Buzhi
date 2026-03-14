@@ -279,9 +279,12 @@ int main_release () {
         printf("Motors enabled!\n");
 
         for (int i = 0; i < pointsA.size(); i++) {
-            // Update drawing progress on screen
-            screen_manager.set_drawing_progress((i + 1) / (double)pointsA.size());
-            screen_manager.update();
+
+            // Update drawing progress on screen every 50 points to avoid excessive updates
+            if (i % 50 == 0) {
+                screen_manager.set_drawing_progress((i + 1) / (double)pointsA.size());
+                screen_manager.update();
+            }
 
             point_data* pointA = pointsA[i];
             point_data* pointB = pointsB[i];
@@ -297,6 +300,10 @@ int main_release () {
                 mot1.disable();
                 mot2.disable();
 
+                // use the stall to update screen.
+                screen_manager.set_drawing_progress((i + 1) / (double)pointsA.size());
+                screen_manager.update();
+
                 sleep_ms(500); // Small delay before moving servo, adjust as needed
                 printf("Setting servo angle from %d to %d\n", last_servo_angle, pointA->servo_angle);
                 servo.set_angle(pointA->servo_angle);
@@ -306,6 +313,7 @@ int main_release () {
                     // If we're moving up, wait a bit longer
                     sleep_ms(1000);
                 }
+
 
                 last_servo_angle = pointA->servo_angle;
 
