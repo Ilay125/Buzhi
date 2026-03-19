@@ -50,7 +50,7 @@ The robot, powered by a **Raspberry Pi Pico 2**, processes the data and executes
 /
 ├── firmware/   # Embedded code (Pico 2)
 ├── app/        # Android application (image → NFC)
-├── sim/        # Internal simulation (development & debugging)
+├── simulator/        # Internal simulation (development & debugging)
 ```
 
 ---
@@ -78,7 +78,7 @@ Android application responsible for generating the drawing data:
 
 ---
 
-### 🧪 sim/
+### 🧪 simulator/
 
 Internal simulation and debugging environment:
 
