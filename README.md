@@ -5,6 +5,10 @@ A robotic system that turns digital images into physical drawings — fully stan
 
 Combining **embedded systems, robotics, communication protocols, and mobile development**, this project demonstrates end-to-end engineering: from user input to precise real-world motion.
 
+**LINK FOR DEMO:** <br />
+<a href="https://www.youtube.com/watch?v=5eL8o3eNwAs">
+  <img src="https://img.youtube.com/vi/5eL8o3eNwAs/maxresdefault.jpg" width="480">
+</a>
 ---
 
 ## 🚀 Overview
