@@ -7,7 +7,7 @@ Combining **embedded systems, robotics, communication protocols, and mobile deve
 
 **LINK FOR DEMO:** <br />
 <a href="https://www.youtube.com/watch?v=uAZYAVJFR_o">
-  <img src="https://img.youtube.com/vi/5eL8o3eNwAs/maxresdefault.jpg" width="480">
+  <img src="https://img.youtube.com/vi/uAZYAVJFR_o/maxresdefault.jpg" width="480">
 </a>
 ---
 
